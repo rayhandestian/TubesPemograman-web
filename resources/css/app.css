@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.cloud-float {
+    animation: floatAnimation 30s linear infinite;
+}
+
+.cloud-float-reverse {
+    animation: floatAnimation 25s linear infinite reverse;
+}
+
+.cloud-float-slow {
+    animation: floatAnimation 40s linear infinite;
+}
+
+@keyframes floatAnimation {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(100vw);
+    }
+}
+.welcome-text {
+    background: linear-gradient(to bottom, #498BD8, #134C8E);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    position: relative;
+    -webkit-text-stroke: 1.5px white;
+    filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.1));
+}
