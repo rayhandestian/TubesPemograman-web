@@ -27,6 +27,7 @@ class AuthController extends Controller
 
         $credentials = $request->only('name','password');
         if(Auth::attempt($credentials)){
+            $request->session()->regenerate();
             return redirect()->intended(route('home'));
         }
         return redirect()->intended(route('signin'))-> with("error","login gagal");
@@ -37,10 +38,10 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'mother_name' => 'required|string|max:255',
-            'age' => 'required|string|max:255',
-            'password' => 'required|string|min:8|confirmed',
+            'age' => 'required|integer|max:255',
+            'password' => 'required|string|min:4|confirmed',
         ]);
-        $data['name'] =  $request->nama;
+        $data['name'] =  $request->name;
         $data['mother_name'] =  $request->mother_name;
         $data['age'] =  $request->age;
         $data['password'] =  Hash::make($request->password);
@@ -50,6 +51,6 @@ class AuthController extends Controller
             return redirect()->intended(route('signup'))-> with("error","registrasi gagal");
         }
 
-        return redirect(route('auth.signin'))->with('success', 'Registrasi berhasil. Silakan login.');
+        return redirect(route('signin'))->with('success', 'Registrasi berhasil. Silakan login.');
     }
 }
