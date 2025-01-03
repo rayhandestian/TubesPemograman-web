@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'KiQualls')</title>
+    <title>Daftar - KiQualls</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-sky-200">
@@ -17,10 +17,19 @@
             <img src="{{ asset('img/matahari.png') }}" alt="Sun" class="absolute w-20 opacity-100 top-100 right-0">
         </div>
 
-        <!-- Page Content -->
-        {{$slot}}
+        <nav class="w-full bg-blue-500 p-4">
+            <div class="container mx-auto flex justify-between">
+                <a href="{{ route('home') }}" class="text-white font-bold">KiQualls</a>
+                <div>
+                    <a href="{{ route('home') }}" class="text-white mr-4">Home</a>
+                    <a href="{{ route('games.index') }}" class="text-white mr-4">Games</a>
+                    <a href="{{ route('profile') }}" class="text-white mr-4">Profile</a>
+                    <a href="{{ route('parent.manage') }}" class="text-white">Manage Questions</a>
+                </div>
+            </div>
+        </nav>
 
-        @stack('scripts')
+       {{$slot}}
     </div>
 </body>
 </html>
