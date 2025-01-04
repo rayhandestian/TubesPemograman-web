@@ -51,7 +51,8 @@ class AuthController extends Controller
         $data['mother_name'] =  $request->mother_name;
         $data['age'] =  $request->age;
         $data['password'] =  Hash::make($request->password);
-        $data['role'] = $request->role; // Assign role
+        $data['role'] = $request->role;
+        $data['points'] = 0; // Initialize points to 0
 
         $user = User::create($data);
 
