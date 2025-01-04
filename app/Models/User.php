@@ -22,7 +22,8 @@ class User extends Authenticatable
         'mother_name',
         'age',
         'password',
-        'role', // Added role to fillable
+        'role',
+        'points',
     ];
 
     /**

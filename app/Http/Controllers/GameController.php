@@ -7,32 +7,50 @@ use Illuminate\Support\Facades\Auth;
 
 class GameController extends Controller
 {
+    private $pointsRequirements = [
+        'motorik-1' => 0,      // First level is free
+        'motorik-2' => 300,    // Need 300 points
+        'motorik-3' => 600,    // Need 600 points
+        'motorik-4' => 900,    // Need 900 points
+    ];
+
     public function index()
     {
+        $user = Auth::user();
+        $userPoints = $user->points ?? 0; // Handle null points
+        
         $games = [
             [
                 'id' => 'motorik-1',
                 'title' => 'Motorik I',
                 'subtitle' => 'Tebak Warna',
-                'icon' => 'Motorik1.png'
+                'icon' => 'Motorik1.png',
+                'required_points' => $this->pointsRequirements['motorik-1'],
+                'is_unlocked' => true
             ],
             [
                 'id' => 'motorik-2',
                 'title' => 'Motorik II',
                 'subtitle' => 'Berhitung',
-                'icon' => 'Motorik2.png'
+                'icon' => 'Motorik2.png',
+                'required_points' => $this->pointsRequirements['motorik-2'],
+                'is_unlocked' => $userPoints >= $this->pointsRequirements['motorik-2']
             ],
             [
                 'id' => 'motorik-3',
                 'title' => 'Motorik III',
                 'subtitle' => 'Membaca',
-                'icon' => 'Motorik3.png'
+                'icon' => 'Motorik3.png',
+                'required_points' => $this->pointsRequirements['motorik-3'],
+                'is_unlocked' => $userPoints >= $this->pointsRequirements['motorik-3']
             ],
             [
                 'id' => 'motorik-4',
                 'title' => 'Motorik IV',
                 'subtitle' => 'Tebak Bentuk',
-                'icon' => 'Motorik4.png'
+                'icon' => 'Motorik4.png',
+                'required_points' => $this->pointsRequirements['motorik-4'],
+                'is_unlocked' => $userPoints >= $this->pointsRequirements['motorik-4']
             ],
         ];
         
@@ -51,6 +69,15 @@ class GameController extends Controller
     }
 
     public function show($level){
+        $user = Auth::user();
+        $userPoints = $user->points ?? 0; // Handle null points
+        
+        // Check if user has enough points to access this level
+        if ($userPoints < $this->pointsRequirements[$level]) {
+            return redirect()->route('games.index')
+                ->with('error', 'Kamu perlu ' . $this->pointsRequirements[$level] . ' poin untuk membuka level ini!');
+        }
+
         $questionData = $this->getQuestionByLevel($level);
         if (is_array($questionData) && isset($questionData[0])) {
             $question = $questionData[0];
@@ -61,20 +88,28 @@ class GameController extends Controller
     }
 
     public function checkAnswer(Request $request){
+        $user = Auth::user();
         $isCorrect = $this->validateAnswer($request->level, $request->answer);
         
         if ($isCorrect) {
+            $points = 100;
+            $user->increment('points', $points);
             return response()->json([
                 'status' => 'success',
                 'message' => 'Selamat jawaban Kamu benar..',
-                'points' => 100
+                'points' => $points
             ]);
         }
 
+        // Calculate new points but ensure it won't go below 0
+        $points = -50;
+        $newPoints = max(0, $user->points + $points);
+        $user->update(['points' => $newPoints]);
+        
         return response()->json([
             'status' => 'error',
             'message' => 'Sayang Sekali jawaban Kamu Salah..',
-            'points' => -50
+            'points' => $newPoints - $user->points // Show actual points deducted
         ]);
     }
 
