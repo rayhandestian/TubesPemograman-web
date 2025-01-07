@@ -1,5 +1,5 @@
-<x-layout_main>
-    {{-- <div class="container mx-auto p-6">
+<x-layout_mainParent>
+    <div class="container mx-auto p-6">
         <h1 class="text-xl font-bold mb-4">Kelola Soal</h1>
         <a href="{{ route('parent.create') }}" class="px-4 py-2 bg-blue-500 text-white rounded">Tambah Soal</a>
 
@@ -28,6 +28,5 @@
                 @endforeach
             </tbody>
         </table>
-    </div> --}}
-</x-layout_main>
-{{-- Tahap Perbaikan --}}
+    </div>
+</x-layout_mainParent>
