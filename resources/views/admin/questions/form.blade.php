@@ -45,12 +45,12 @@
 
                     <div class="mb-4">
                         <label for="level" class="block text-gray-700 text-sm font-bold mb-2">Level</label>
-                        <input type="text" 
-                               name="level" 
-                               id="level" 
-                               value="{{ old('level', $question->level ?? '') }}" 
-                               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                               required>
+                        <select name="level" id="level" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                            <option value="motorik-1" {{ (old('level', $question->level ?? '') == 'motorik-1') ? 'selected' : '' }}>Motorik 1</option>
+                            <option value="motorik-2" {{ (old('level', $question->level ?? '') == 'motorik-2') ? 'selected' : '' }}>Motorik 2</option>
+                            <option value="motorik-3" {{ (old('level', $question->level ?? '') == 'motorik-3') ? 'selected' : '' }}>Motorik 3</option>
+                            <option value="motorik-4" {{ (old('level', $question->level ?? '') == 'motorik-4') ? 'selected' : '' }}>Motorik 4</option>
+                        </select>
                     </div>
 
                     <div class="mb-4">
@@ -63,26 +63,85 @@
                     </div>
 
                     <div class="mb-4">
-                        <label for="question_desc" class="block text-gray-700 text-sm font-bold mb-2">Description (Optional)</label>
+                        <label for="question_desc" class="block text-gray-700 text-sm font-bold mb-2">Question Description</label>
                         <textarea name="question_desc" 
                                   id="question_desc" 
                                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                  rows="3">{{ old('question_desc', $question->question_desc ?? '') }}</textarea>
+                                  rows="2">{{ old('question_desc', $question->question_desc ?? '') }}</textarea>
                     </div>
 
                     <div class="mb-4">
-                        <label for="image" class="block text-gray-700 text-sm font-bold mb-2">Image (Optional)</label>
+                        <label for="image" class="block text-gray-700 text-sm font-bold mb-2">Question Image</label>
                         <input type="file" 
                                name="image" 
                                id="image" 
-                               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                               accept="image/*">
+                               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                         @if(isset($question) && $question->image)
                             <div class="mt-2">
-                                <p class="text-sm text-gray-600">Current Image:</p>
-                                <img src="{{ asset('storage/' . $question->image) }}" alt="Current Question Image" class="mt-1 h-20 w-20 object-cover rounded">
+                                <img src="{{ asset('storage/' . $question->image) }}" alt="Current Image" class="h-20 w-20 object-cover">
                             </div>
                         @endif
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Options</label>
+                        <div id="options-container">
+                            @if(isset($question))
+                                @foreach($question->options as $index => $option)
+                                    <div class="option-group mb-4 p-4 border rounded">
+                                        <div class="mb-2">
+                                            <label class="block text-gray-700 text-sm font-bold mb-2">Type</label>
+                                            <select name="options[{{ $index }}][type]" class="shadow border rounded w-full py-2 px-3 text-gray-700" required>
+                                                <option value="text" {{ $option->type == 'text' ? 'selected' : '' }}>Text</option>
+                                                <option value="image" {{ $option->type == 'image' ? 'selected' : '' }}>Image</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="block text-gray-700 text-sm font-bold mb-2">Value</label>
+                                            <input type="text" name="options[{{ $index }}][value]" value="{{ $option->value }}" class="shadow border rounded w-full py-2 px-3 text-gray-700" required>
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="block text-gray-700 text-sm font-bold mb-2">Image (for image type)</label>
+                                            <input type="file" name="options[{{ $index }}][image]" class="shadow border rounded w-full py-2 px-3 text-gray-700">
+                                            @if($option->image)
+                                                <img src="{{ asset('storage/' . $option->image) }}" alt="Option Image" class="h-10 w-10 object-cover mt-2">
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @else
+                                @for($i = 0; $i < 4; $i++)
+                                    <div class="option-group mb-4 p-4 border rounded">
+                                        <div class="mb-2">
+                                            <label class="block text-gray-700 text-sm font-bold mb-2">Type</label>
+                                            <select name="options[{{ $i }}][type]" class="shadow border rounded w-full py-2 px-3 text-gray-700" required>
+                                                <option value="text">Text</option>
+                                                <option value="image">Image</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="block text-gray-700 text-sm font-bold mb-2">Value</label>
+                                            <input type="text" name="options[{{ $i }}][value]" class="shadow border rounded w-full py-2 px-3 text-gray-700" required>
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="block text-gray-700 text-sm font-bold mb-2">Image (for image type)</label>
+                                            <input type="file" name="options[{{ $i }}][image]" class="shadow border rounded w-full py-2 px-3 text-gray-700">
+                                        </div>
+                                    </div>
+                                @endfor
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="correct_answer" class="block text-gray-700 text-sm font-bold mb-2">Correct Answer</label>
+                        <input type="text" 
+                               name="correct_answer" 
+                               id="correct_answer" 
+                               value="{{ old('correct_answer', $question->correct_answer ?? '') }}"
+                               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                               required>
+                        <p class="text-sm text-gray-600 mt-1">Enter the value of the correct option</p>
                     </div>
 
                     <div class="flex items-center justify-end">
